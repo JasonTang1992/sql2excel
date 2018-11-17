@@ -119,7 +119,7 @@ if __name__ == "__main__":
     sql = open(sys.argv[1], "r")
     sql_content = sql.read().decode("utf-8")
 
-    table_match = "CREATE TABLE\s+`\w+`\s+[^;]*"
+    table_match = "CREATE TABLE\s+`\S+`\s+[^;]*"
 
     table_result = re.findall(table_match, sql_content)
     table_name_array = []
@@ -128,7 +128,7 @@ if __name__ == "__main__":
         table_content = table_result[x]
         table_name = ""
 
-        tmp = re.findall(r'CREATE TABLE\s+`\w+`', table_content)
+        tmp = re.findall(r'CREATE TABLE\s+`\S+`', table_content)
         tmp = re.findall(r'`\S+`', tmp[0])
         tmp = re.findall(r'[^`]+', tmp[0])
         table_name = tmp[0]
@@ -176,7 +176,7 @@ if __name__ == "__main__":
 
             pass
         if len(table_name) > 30:
-            table_name_tmp = table_name[0:30]
+            table_name_tmp = table_name[0:29]
         else:
             table_name_tmp = table_name
         sheet = book.add_sheet(table_name_tmp.capitalize())
@@ -189,7 +189,7 @@ if __name__ == "__main__":
         sheet.write(0, 6, "备注", style.getStyle("good"))
 
         for i in xrange(0, len(entry_array)):
-            sheet.write(i + 1, 0, x + 1, style.getStyle("normal"))
+            sheet.write(i + 1, 0, i + 1, style.getStyle("normal"))
             sheet.write(
                 i + 1, 1, entry_array[i].name.upper(), style.getStyle("normal"))
             sheet.write(i + 1, 2, "", style.getStyle("normal"))
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     sheet.write(2, 5, "是否存在敏感字段", style.getStyle("good"))
     sheet.write(2, 6, "备注", style.getStyle("good"))
 
-    for x in xrange(0, len(entry_array)):
+    for x in xrange(0, len(table_name_array)):
         sheet.write(x + 3, 0, x + 1, style.getStyle("normal"))
         sheet.write(x + 3, 1, "", style.getStyle("normal"))
         sheet.write(x + 3, 2, "", style.getStyle("normal"))

@@ -184,7 +184,6 @@ class SQLParser(object):
                 table_name_tmp = table_name[0:30]
             else:
                 table_name_tmp = table_name
-            print(table_name_tmp)
             sheet = book.add_sheet(table_name_tmp.capitalize())
             sheet.write(0, 0, "序号", style.getStyle("good"))
             sheet.write(0, 1, "字段名", style.getStyle("good"))
@@ -274,22 +273,20 @@ class App(object):
 
     def convert(self):
         sqlparser = SQLParser()
-        self.progress.set("Converting Begin")
+        self.progress.set("转换开始")
         for sqlfilepath in self.openfiles:
             tmp = re.findall(r"\/([^ \f\n\r\t\v\/]+.)+\S+", sqlfilepath)
-            print(tmp[0])
             tmp = re.findall("\S+.", tmp[0])
             if len(tmp)>0:
                 filename = tmp[0]
-                print(filename)
             else:
                 filename = "unknowndir" + str(self.unknowndir)
                 self.unknowndir += 1
+            self.progress.set(filename + " 开始转换")
             sqlfile = open(sqlfilepath, "r", encoding = 'utf-8')
-            print(self.savedir + "/" + filename + ".xls")
             sqlparser.parse(sqlfile.read(), self.savedir + "/" + filename + ".xls")
-            self.progress.set(filename + " completed")
-        self.progress.set("Converting is Over")
+            self.progress.set(filename + " 转换完成")
+        self.progress.set("转换结束")
         
 
 if __name__ == "__main__":

@@ -12,7 +12,6 @@ class Entry(object):
         self.typelength = typelength
         self.default = default
         self.comment = comment
-        pass
 
 
 class Styles(object):
@@ -116,15 +115,15 @@ if __name__ == "__main__":
 
     book = xlwt.Workbook(encoding='utf-8',  style_compression=0)
 
-    sql = open(sys.argv[1], "r")
-    sql_content = sql.read().decode("utf-8")
+    sql = open(sys.argv[1], "r", encoding='utf-8')
+    sql_content = sql.read()
 
     table_match = "CREATE TABLE\s+`\S+`\s+[^;]*"
 
     table_result = re.findall(table_match, sql_content)
     table_name_array = []
-
-    for x in xrange(0, len(table_result)):
+    table_name_sheet = {}
+    for x in range(0, len(table_result)):
         table_content = table_result[x]
         table_name = ""
 
@@ -132,12 +131,18 @@ if __name__ == "__main__":
         tmp = re.findall(r'`\S+`', tmp[0])
         tmp = re.findall(r'[^`]+', tmp[0])
         table_name = tmp[0]
+        if table_name[0:29] in table_name_sheet:
+            table_name_sheet[table_name[0:29]] += 1
+            table_name = table_name[0:29] + str(table_name_sheet[table_name[0:29]])
+        else:
+            table_name_sheet[table_name[0:29]] = 0
+            pass
         table_name_array.append(table_name)
 
         entrys = re.findall("[^\n]*", table_content)
         entry_array = []
-        print entrys
-        for y in xrange(0, len(entrys)):
+        # print entrys
+        for y in range(0, len(entrys)):
 
             tmp = re.findall("\S+", entrys[y])
             if len(tmp) == 0:
@@ -146,7 +151,7 @@ if __name__ == "__main__":
             if len(tmp) == 0:
                 continue
 
-            print entrys[y]
+            # print entrys[y]
             tmp = re.findall("`\S+`", entrys[y])
             # names.append(re.findall("[^`]+",tmp[0])[0])
             name = re.findall("[^`]+", tmp[0])[0]
@@ -176,9 +181,10 @@ if __name__ == "__main__":
 
             pass
         if len(table_name) > 30:
-            table_name_tmp = table_name[0:29]
+            table_name_tmp = table_name[0:30]
         else:
             table_name_tmp = table_name
+        print(table_name_tmp)
         sheet = book.add_sheet(table_name_tmp.capitalize())
         sheet.write(0, 0, "序号", style.getStyle("good"))
         sheet.write(0, 1, "字段名", style.getStyle("good"))
@@ -188,7 +194,7 @@ if __name__ == "__main__":
         sheet.write(0, 5, "是否敏感信息", style.getStyle("good"))
         sheet.write(0, 6, "备注", style.getStyle("good"))
 
-        for i in xrange(0, len(entry_array)):
+        for i in range(0, len(entry_array)):
             sheet.write(i + 1, 0, i + 1, style.getStyle("normal"))
             sheet.write(
                 i + 1, 1, entry_array[i].name.upper(), style.getStyle("normal"))
@@ -219,7 +225,7 @@ if __name__ == "__main__":
     sheet.write(2, 5, "是否存在敏感字段", style.getStyle("good"))
     sheet.write(2, 6, "备注", style.getStyle("good"))
 
-    for x in xrange(0, len(table_name_array)):
+    for x in range(0, len(table_name_array)):
         sheet.write(x + 3, 0, x + 1, style.getStyle("normal"))
         sheet.write(x + 3, 1, "", style.getStyle("normal"))
         sheet.write(x + 3, 2, "", style.getStyle("normal"))

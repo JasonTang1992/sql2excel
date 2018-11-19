@@ -4,6 +4,7 @@ import xlwt
 import sys
 from xlwt import *
 import tkinter as tk
+from tkinter import filedialog
 
 
 class Entry(object):
@@ -108,7 +109,7 @@ class Styles(object):
         if style == "normal":
             return self.normalstyle
         return
-        
+
 class SQLParser(object):
     """docstring for SQLParser"""
     def __init__(self):
@@ -237,9 +238,63 @@ class SQLParser(object):
 
         return
 
+class App(object):
+    """docstring for App"""
+    def __init__(self, master):
+        super(App, self).__init__()
+        self.fm1 = tk.Frame(master)
+        self.openfiles = []
+        self.savedir = ""
+        self.unknowndir = 0
+
+        self.openFiles = tk.StringVar()
+        self.saveDir = tk.StringVar()
+        self.progress = tk.StringVar()
+
+        tk.Label(master, text = "SQL文件：").grid(row = 0, column = 0)
+        tk.Entry(master, textvariable = self.openFiles).grid(row = 0, column = 1)
+        tk.Button(master, text = "打开文件", command = self.selectPath).grid(row = 0, column = 2)
+
+        tk.Label(master, text = "Excel文件：").grid(row = 1, column = 0)
+        tk.Entry(master, textvariable = self.saveDir).grid(row = 1, column = 1)
+        tk.Button(master, text = "保存文件", command = self.selectDir).grid(row = 1, column = 2)
+
+        tk.Label(master, textvariable = self.progress).grid(row = 2, column = 0)
+        tk.Button(master, text = "转换", command = self.convert).grid(row = 2, column = 2)
+
+    def selectPath(self):
+        self.openfiles = tk.filedialog.askopenfilenames(title = "打开SQL文件", filetypes = [('sql文件', '*.sql'), ('所有文件', '*')])
+        if len(self.openfiles) > 0:
+            self.openFiles.set(self.openfiles[0])
+        
+
+    def selectDir(self):
+        self.savedir = tk.filedialog.askdirectory()
+        self.saveDir.set(self.savedir)
+
+    def convert(self):
+        sqlparser = SQLParser()
+        self.progress.set("Converting Begin")
+        for sqlfilepath in self.openfiles:
+            tmp = re.findall(r"\/([^ \f\n\r\t\v\/]+.)+\S+", sqlfilepath)
+            print(tmp[0])
+            tmp = re.findall("\S+.", tmp[0])
+            if len(tmp)>0:
+                filename = tmp[0]
+                print(filename)
+            else:
+                filename = "unknowndir" + str(self.unknowndir)
+                self.unknowndir += 1
+            sqlfile = open(sqlfilepath, "r", encoding = 'utf-8')
+            print(self.savedir + "/" + filename + ".xls")
+            sqlparser.parse(sqlfile.read(), self.savedir + "/" + filename + ".xls")
+            self.progress.set(filename + " completed")
+        self.progress.set("Converting is Over")
+        
+
 if __name__ == "__main__":
 
-    sqlparser = SQLParser()
-    sql = open(sys.argv[1], "r", encoding='utf-8')
-    sql_content = sql.read()
-    sqlparser.parse(sql_content, sys.argv[1]+".xls")
+    root = tk.Tk()
+    root.title("SQL2Excel")
+    display = App(root)
+    root.mainloop()

@@ -60,7 +60,7 @@ class Styles(object):
         fnt = Font()                        # 创建一个文本格式，包括字体、字号和颜色样式特性
         fnt.colour_index = 0                # 设置其字体颜色
         fnt.bold = True
-        fnt.height = 11 * 20
+        fnt.height = 9 * 20
         self.goodstyle.font = fnt  # 将赋值好的模式参数导入Style
 
         borders = Borders()
@@ -185,6 +185,29 @@ class SQLParser(object):
             else:
                 table_name_tmp = table_name
             sheet = book.add_sheet(table_name_tmp.capitalize())
+            # 计算列宽
+
+            namelenmax = 10
+            typelengthlenmax = 10
+            defaultlenmax = 10
+            commentlenmax = 10 
+            for i in range(0, len(entry_array)):
+                if len(entry_array[i].name) > namelenmax:
+                    namelenmax = len(entry_array[i].name)
+                if len(entry_array[i].typelength) > typelengthlenmax:
+                    typelengthlenmax = len(entry_array[i].typelength)
+                if len(entry_array[i].default) > defaultlenmax:
+                    defaultlenmax = len(entry_array[i].default)
+                if len(entry_array[i].comment) > commentlenmax:
+                    commentlenmax = len(entry_array[i].comment)
+            sheet.col(0).width = 400*(len("序号")+1)
+            sheet.col(1).width = 400*(namelenmax+1)
+            sheet.col(2).width = 400*(len("中文描述")+1)
+            sheet.col(3).width = 400*(typelengthlenmax+1)
+            sheet.col(4).width = 400*(defaultlenmax+1)
+            sheet.col(5).width = 400*(len("是否敏感信息")+1)
+            sheet.col(6).width = 400*(commentlenmax+1)
+
             sheet.write(0, 0, "序号", style.getStyle("good"))
             sheet.write(0, 1, "字段名", style.getStyle("good"))
             sheet.write(0, 2, "中文描述", style.getStyle("good"))

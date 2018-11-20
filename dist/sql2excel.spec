@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['sql2excel.py'],
-             pathex=['D:\\git-reps\\sql2excel'],
+             pathex=['D:\\git-reps\\sql2excel\\dist'],
              binaries=[],
              datas=[],
              hiddenimports=[],

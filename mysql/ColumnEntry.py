@@ -1,9 +1,6 @@
-from mysql import Constraint
-from mysql import DataType
+class ColumnEntry:
 
-class ColumnEnry:
-
-    def __init__(self, name = "Unknown", constraint = Constraint(), comment = "", dataType = DataType() ):
+    def __init__(self, name, constraint, comment, dataType):
         self.name = name
         self.constraint = constraint
         self.comment = comment

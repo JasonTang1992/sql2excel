@@ -2,7 +2,7 @@ import pymysql
 
 class MysqlEntry:
     
-    def __init__(self, name = "unknown", ip = "", port = "", username = "", password = ""):
+    def __init__(self, name, ip, port, username, password):
         self.name = name
         self.ip = ip
         self.port = port

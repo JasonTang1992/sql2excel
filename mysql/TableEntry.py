@@ -1,4 +1,3 @@
-from mysql import ColumnEntry
 
 class TableEntry:
     
